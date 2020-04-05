@@ -63,31 +63,36 @@ impl CandlRenderer<PocRenderer, PocUpdate, ()> for PocRenderer {
             );
         }
         let (w, h) = self.size;
-        //
         let views = [
-            [0, 0, w/2, h/2],
-            [w/2, 0, w, h/2],
-            [0, h/2, w/2, h],
-            [w/2, h/2, w, h]
+            [0, h/2],
+            [w/2, h/2],
+            [0, 0],
+            [w/2, 0]
         ];
-        //
-        for i in 0..cmp::max(4, self.nvg_contexts.len()) {
-            //
+        for i in 0..cmp::min(4, self.nvg_contexts.len()) {
             unsafe { gl::Viewport(
                 views[i][0] as i32,
                 views[i][1] as i32,
-                views[i][2] as i32,
-                views[i][3] as i32
+                (w/2) as i32,
+                (h/2) as i32
             ); }
             //
             let ctxt = &mut self.nvg_contexts[i];
-            //
             ctxt.begin_frame( nvg::Extent::new((w/2) as f32, (h/2) as f32), 1.0).unwrap();
-            //
-            //
             ctxt.save();
-            //
             ctxt.reset_transform();
+            //
+            if i == 0 {
+                ctxt.begin_path();
+                ctxt.rect(nvg::Rect::new(
+                    nvg::Point::new(0.0, 0.0),
+                    nvg::Extent::new(10.0, 10.0)
+                ));
+                ctxt.close_path();
+                ctxt.fill_paint(nvg::Color::rgb_i(0, 255, 0));
+                ctxt.fill().unwrap();
+            }
+            //
             ctxt.begin_path();
             //
             ctxt.rect(nvg::Rect::new(
@@ -96,37 +101,25 @@ impl CandlRenderer<PocRenderer, PocUpdate, ()> for PocRenderer {
             ));
             //
             ctxt.close_path();
-            ctxt.fill_paint(nvg::Color::rgb_i((0+i*50) as u8, 100, (255-i*50) as u8));
+            //
+            let color = if i == 0 {
+                nvg::Color::rgb_i(0, 100, 255)
+            } else if i == 1 {
+                nvg::Color::rgb_i(0, 255, 100)
+            } else if i == 2 {
+                nvg::Color::rgb_i(100, 100, 0)
+            } else {
+                nvg::Color::rgb_i(255, 100, 0)
+            };
+            //
+            ctxt.fill_paint(color);
             ctxt.fill().unwrap();
             //
             ctxt.restore();
             //
             ctxt.end_frame().unwrap();
+            //
         }
-        /*
-        if let Some(ctxt) = &mut self.context {
-            ctxt.begin_frame(
-                nvg::Extent {width: w as f32, height: h as f32},
-                1.0
-            ).unwrap();
-            ctxt.save();
-            //
-            ctxt.reset_transform();
-            ctxt.begin_path();
-            //
-            ctxt.rect(nvg::Rect::new(
-                nvg::Point::new(10.0, 10.0),
-                nvg::Extent::new(50.0, 50.0)
-            ));
-            //
-            ctxt.close_path();
-            ctxt.fill_paint(nvg::Color::rgb_i(0, 100, 255));
-            ctxt.fill().unwrap();
-            //
-            ctxt.restore();
-            ctxt.end_frame().unwrap();
-        }
-        */
     }
 }
 
