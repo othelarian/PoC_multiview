@@ -1,7 +1,7 @@
-use candelabre_core::{CandlRenderer, CandlUpdate};
 use candelabre_windowing::{
     CandlDimension, CandlManager, CandlOptions, CandlSurface,
-    CandlSurfaceBuilder, CandlWindow as _
+    CandlRenderer, CandlSurfaceBuilder,
+    CandlUpdate, CandlWindow as _
 };
 use gl;
 use glutin::dpi::{PhysicalPosition, PhysicalSize};
